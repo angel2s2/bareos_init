@@ -1,0 +1,1 @@
+# bareos_init
