@@ -29,13 +29,13 @@ HOMEPAGE='https://github.com/angel2s2/bareos_init'
 ### RUSSIAN ###
 Данный скрипт создает первичные конфиги для bareos и настраивает директивы в них, в частности пароли и имена ресурсов.
 Перед использованием скрипта нужно установить mariadb/mysql, bareos и (не обязательно) bareos-webui. А так же прописать значения в переменные в этом скрипте.
-Подробнее про этот сприпт и его работу можно узнать в моем блоге: http://blog.angel2s2.ru/
+Подробнее про этот сприпт и его работу можно узнать в моем блоге: http://blog.angel2s2.ru/2016/04/bareos-init.html
 или на github'е: ${HOMEPAGE}
 
 ### ENGLISH ###
 This script creates primary configs for Bareos and configures directives for them, passwords and resource names particulary.
 Install mariadb/mysql, bareos and bareos-webui (not necessary) before using the script. Also set variable values in that script.
-You can read more about this script and it's work in my blog: http://blog.angel2s2.ru/
+You can read more about this script and it's work in my blog: http://blog.angel2s2.ru/2016/04/bareos-init.html
 or at github: ${HOMEPAGE}
 
 EOF_MESSAGE
