@@ -1,5 +1,5 @@
 # bareos_init
 
 Шаблоны конфигов и несколько скриптов для облегчения развертывания bareos и добавления новых заданий.
-Подробнее в блоге -> http://blog.angel2s2.ru/2016/04/bareos-init.html
+Подробнее в блоге -> http://blog.angel2s2.ru/2015/04/bareos-init.html
 
