@@ -28,10 +28,13 @@ BAREOS_SCRIPTS_DIR="${BAREOS_DIR}/scripts"
 NOW="$(date +%Y%m%d%H%M%S)"
 THIS_SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"  # Откуда запущен скрипт
 
+# получаем список скриптов
 ls -1 "${THIS_SCRIPT_DIR}/scripts" | while read CURRENT_FILE ; do 
+  # если такого файла нет в каталоге bareos, значит это новый скрипт => тупо копируем
   if [ ! -f "${BAREOS_SCRIPTS_DIR}/${CURRENT_FILE}" ] ; then
     cp -f "${THIS_SCRIPT_DIR}/scripts/${CURRENT_FILE}" "${BAREOS_SCRIPTS_DIR}"
   else
+    # иначе сравниваем и если различаются, делаем бэкап, а потом попируем с заменой
     diff -q "${THIS_SCRIPT_DIR}/scripts/${CURRENT_FILE}" "${BAREOS_SCRIPTS_DIR}/${CURRENT_FILE}" &>/dev/null
     if [ $? -eq 1 ] ; then
       cp -f "${BAREOS_SCRIPTS_DIR}/${CURRENT_FILE}" "${BAREOS_SCRIPTS_DIR}/${CURRENT_FILE}.bak_${NOW}"
