@@ -15,7 +15,7 @@ LICENSE='GPLv3'
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 # 
-SCRIPT_NAME='initialize_bareos_configs.sh'
+SCRIPT_NAME='add_job.sh'
 VERSION=0.2015.04.10
 DESCRIPTION="${SCRIPT_NAME} - script for bareos"
 AUTHOR='Roman (Angel2S2) Shagrov'
