@@ -36,5 +36,9 @@ sed -i "s/^\([#]\?XXX_CONSOLE_MONITORING_PASS_XXX='\)[^']*'/\1'/g"   "${INIT_SCR
 #sed -i "s/^\([#]\?XXX_CONSOLE_ADMIN_NAME_XXX='\)[^']*'/\1'/g"        "${INIT_SCRIPT}"
 #sed -i "s/^\([#]\?XXX_CONSOLE_MONITORING_NAME_XXX='\)[^']*'/\1'/g"   "${INIT_SCRIPT}"
 
-git add . && git commit -a && git tag "v${MVERSION}" && git push
+if [ "$(git tag -l v${MVERSION})" = "v${MVERSION}" ] ; then
+  git add . && git commit -a && git push
+else
+  git add . && git commit -a && git tag "v${MVERSION}" && git push
+fi
 
