@@ -1,0 +1,120 @@
+Client {
+  Enabled                   = yes
+  Name                      = client_###name###
+  Password                  = "###client_pass###"
+  Address                   = ###client_address###
+  #Passive                  = no
+  @/etc/bareos/inc.d/dir_client.conf
+}
+
+Schedule {
+  Enabled                   = yes
+  Name                      = schedule_###name###
+  Run                       = Level=Incremental     tue-sat     at 2:00
+  Run                       = Level=Differential    sat         at 2:00
+  Run                       = Level=Full            1st sat     at 2:00
+  # Examples:
+  # Run = Level=Full sun at 2:05                          # полный, по вс., в 2:05
+  # Run = Level=Incremental mon-sat at 2:05               # инкрем., с пн. по сб., в 2:05
+  # Run = Level=Full Pool=Monthly 1st sun at 2:05         # полный, в пул Monthly, первое вс. месяца, в 2:05
+  # Run = Level=Differential 2nd-5th sun at 2:05          # диффер., в пул из Job {}, со 2 по 5 вс. месяца, в 2:05
+  # Run = Level=Incremental Pool=Daily mon-sat at 2:05    # инкрем., в пул Daily, с пн. по сб., в 2:05
+  # Run = Level=Full on 1 at 2:05                         # полный, первого числа месяца, в 2:05
+  # Run = Level=Incremental on 2-31 at 2:05               # инкрем., со 2 по 31 числа месяца, в 2:05
+  # Run = Level=Full hourly at 0:05                       # полный, каждый час в 5 минут
+}
+
+
+FileSet {
+  Name                      = fileset_###name###
+  Enable VSS                = no
+  Ignore File Set Changes   = no
+  Include {
+    @/etc/bareos/inc.d/dir_fileset_nix.conf
+    #@/etc/bareos/inc.d/dir_fileset_win.conf
+    File                    = /path/to/file.ext
+    File                    = /path/to/dir
+  }
+  Exclude {
+    File                    = /proc
+  }
+}
+
+Job {
+  Enabled                   = yes
+  Name                      = job_###name###
+  JobDefs                   = job_default
+  client                    = client_###name###
+  FileSet                   = fileset_###name###
+  Schedule                  = schedule_###name###
+  Storage                   = storage_###name###
+  Write Bootstrap           = "###path_to###/###name###.bsr"
+  Pool                      = pool_full_###name###
+  Full Backup Pool          = pool_full_###name###
+  #Virtual Full Backup Pool  = pool_virtfull_###name###
+  Differential Backup Pool  = pool_diff_###name###
+  Incremental Backup Pool   = pool_inc_###name###
+  #Client Run Before Job     = "/etc/bareos/backup_scripts/script_name.sh" 
+  #RunScript {
+  #  Runs When               = After
+  #  Runs On Success         = Yes
+  #  Runs On Failure         = Yes
+  #  Runs On Client 	       = Yes
+  #  Command                 = "sh -c '/bin/rm -f /tmp/file1.sql'"
+  #  Command                 = "sh -c '/bin/rm -f /tmp/file2.sql'"
+  #}
+}
+
+Pool {
+  Name                      = pool_full_###name###
+  Storage                   = storage_###name###
+  Label Format              = "###name###_full_"
+  Maximum Volumes           = 0
+  Volume Retention          = 61 days
+  JobRetention              = 61 days
+  FileRetention             = 61 days
+  @/etc/bareos/inc.d/dir_pool.conf
+}
+
+Pool {
+  Name                      = pool_diff_###name###
+  Storage                   = storage_###name###
+  Label Format              = "###name###_diff_"
+  Maximum Volumes           = 0
+  Volume Retention          = 61 days
+  JobRetention              = 61 days
+  FileRetention             = 61 days
+  @/etc/bareos/inc.d/dir_pool.conf
+}
+
+Pool {
+  Name                      = pool_inc_###name###
+  Storage                   = storage_###name###
+  Label Format              = "###name###_inc_"
+  Maximum Volumes           = 0
+  Volume Retention          = 61 days
+  JobRetention              = 61 days
+  FileRetention             = 61 days
+  @/etc/bareos/inc.d/dir_pool.conf
+}
+
+#Pool {
+#  Name                      = pool_virtfull_###name###
+#  Storage                   = storage_###name###
+#  Label Format              = "###name###_virtfull_"
+#  Maximum Volumes           = 0
+#  Volume Retention          = 61 days
+#  JobRetention              = 61 days
+#  FileRetention             = 61 days
+#  @/etc/bareos/inc.d/dir_pool.conf
+#}
+
+Storage {
+  Enabled                   = yes
+  Name                      = storage_###name###
+  Device                    = device_###name###
+  Media Type                = mt_###name###
+  @/etc/bareos/inc.d/dir_storage.conf
+}
+
+# vim:syntax=bacula:ts=2

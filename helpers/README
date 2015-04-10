@@ -1,0 +1,6 @@
+helper.bareos-dir.conf  - основной конфиг director'a
+helper.jobs.conf        - задания, 1 файл = 1 задание
+helper.bareos-sd.conf   - основной конфиг storage daemon
+helper.bareos-fd.conf   - конфиг демона file daemon
+helper.bconsole.conf    - конфиг консоли управления
+

@@ -1,0 +1,8 @@
+Device {
+  Name                          = device_###name###
+  Media Type                    = mt_###name###
+  Archive Device                = ###path_to###
+  @/etc/bareos/inc.d/sd_device.conf
+}
+
+# vim:syntax=bacula:ts=2

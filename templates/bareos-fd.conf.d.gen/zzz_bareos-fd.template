@@ -1,0 +1,29 @@
+Client {
+  Name                          = client_fd_###name###
+  Working Directory             = /var/lib/bareos
+  Pid Directory                 = /var/run
+  #Scripts Directory            = <directory> 
+  Maximum Concurrent Jobs       = 20
+  Heartbeat Interval            = 30
+  FD Address                    = ###client_address###
+  FD Port                       = 9102
+  SD Connect Timeout            = 30 min
+  Maximum Network Buffer Size   = 65536
+  Messages                      = messages_file_daemon 
+  Allow Bandwidth Bursting      = no
+}
+
+Director {
+  Name                          = XXX_DIRECTOR_NAME_XXX
+  Password                      = "###client_pass###"
+  Monitor                       = no
+  Address                       = XXX_DIRECTOR_ADDRESS_XXX
+}
+
+Messages {
+  Name                          = messages_file_daemon
+  director                      = XXX_DIRECTOR_NAME_XXX         = all
+  console                       = all, !skipped
+}
+
+# vim:syntax=bacula:ts=2
