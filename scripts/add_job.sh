@@ -16,7 +16,7 @@ LICENSE='GPLv3'
 #       MA 02110-1301, USA.
 # 
 SCRIPT_NAME='add_job.sh'
-VERSION=0.2015.04.10
+VERSION=0.2015.04.14
 DESCRIPTION="${SCRIPT_NAME} - script for bareos"
 AUTHOR='Roman (Angel2S2) Shagrov'
 EMAIL='bareos_init.mail@angel2s2.ru'   # для ошибок, замечаний и предложений
@@ -152,7 +152,6 @@ if [ -z "${CLIENT_ADDRESS}" ] ; then echo 'Client address [-a] is not specified!
 
 # Если уже есть задание, то спросить, перезаписать его или нет
 if [ -f "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf" -o -f "${BAREOS_SD_CONF_D_DIR}/${JOB_NAME}.conf" -o -f "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos_fd.conf" ] ; then
-  READ_RESULT='n'
   read -r -p "Job ${JOB_NAME} already exists. Overwrite? [y/N] " READ_RESULT
   # если ответ отрицательный
   if [ "${READ_RESULT}" != "y" -a "${READ_RESULT}" != "Y" -a "${READ_RESULT}" != "yes" -a "${READ_RESULT}" != "YES" ] ; then
@@ -194,9 +193,8 @@ SED_SD="$(echo "${BAREOS_SD_CONF_D_DIR}/${JOB_NAME}.conf"   | sed -e 's/\//\\\//
 # Если есть отключенное задание, то предлагаем его включить
 egrep -qs "^#@${SED_DIR}" "${BAREOS_DIR}/bareos-dir.conf"
 if [ $? -eq 0 ] ; then 
-  READ_RESULT='y'
   read -r -p "This job is already present in bareos-dir.conf, it is disabled. Turn On? [Y/n] " READ_RESULT
-  if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" ] ; then
+  if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" -o -z "${READ_RESULT}" ] ; then
     sed -i "s/^@#${SED_DIR}/@${SED_DIR}/g" "${BAREOS_DIR}/bareos-dir.conf"
   fi
 # иначе проверяем, есть ли уже такое задание и если нету - добавляем инклюд
@@ -211,9 +209,8 @@ fi
 # Если есть отключенное задание, то предлагаем его включить
 egrep -qs "^#@${SED_SD}" "${BAREOS_DIR}/bareos-sd.conf"
 if [ $? -eq 0 ] ; then 
-  READ_RESULT='y'
   read -r -p "This job is already present in bareos-dir.conf, it is disabled. Turn On? [Y/n] " READ_RESULT
-  if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" ] ; then
+  if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" -o -z "${READ_RESULT}" ] ; then
     sed -i "s/^@#${SED_SD}/@${SED_SD}/g" "${BAREOS_DIR}/bareos-sd.conf"
   fi
 # иначе проверяем, есть ли уже такое задание и если нету - добавляем инклюд
@@ -244,9 +241,8 @@ sed -i "s/${PATH_TO_T}/${PATH_TO}/g"                "${BAREOS_DIR_CONF_D_DIR}/${
 sed -i "s/${PATH_TO_T}/${PATH_TO}/g"                "${BAREOS_SD_CONF_D_DIR}/${JOB_NAME}.conf"              
 ### }
 
-READ_RESULT='y'
 read -r -p "Open file '${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf' ? [Y/n] " READ_RESULT
-if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" ] ; then
+if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" -o -z "${READ_RESULT}" ] ; then
   vim "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf"
 fi
 
@@ -260,15 +256,13 @@ else
   echo "Client ${CLIENT_ADDRESS}:${CLIENT_PORT} is not available..."
 fi
 
-READ_RESULT_RELOAD='y'
 read -r -p "Reload bareos, for the new settings take effect? [Y/n] " READ_RESULT_RELOAD
-if [ "${READ_RESULT_RELOAD}" = "y" -o "${READ_RESULT_RELOAD}" = "Y" -o "${READ_RESULT_RELOAD}" = "yes" -o "${READ_RESULT_RELOAD}" = "YES" ] ; then
+if [ "${READ_RESULT_RELOAD}" = "y" -o "${READ_RESULT_RELOAD}" = "Y" -o "${READ_RESULT_RELOAD}" = "yes" -o "${READ_RESULT_RELOAD}" = "YES" -o -z "${READ_RESULT_RELOAD}" ] ; then
   service bareos-sd reload
   service bareos-dir reload
   if [ ${IS_CLIENT_AVAILABLE} -eq 0 ] ; then
-    READ_RESULT_CHECK_FILESET=y
     read -r -p "Want to check fileset now? [Y/n] " READ_RESULT_CHECK_FILESET
-    if [ "${READ_RESULT_CHECK_FILESET}" = "y" -o "${READ_RESULT_CHECK_FILESET}" = "Y" -o "${READ_RESULT_CHECK_FILESET}" = "yes" -o "${READ_RESULT_CHECK_FILESET}" = "YES" ] ; then
+    if [ "${READ_RESULT_CHECK_FILESET}" = "y" -o "${READ_RESULT_CHECK_FILESET}" = "Y" -o "${READ_RESULT_CHECK_FILESET}" = "yes" -o "${READ_RESULT_CHECK_FILESET}" = "YES" -o -z "${READ_RESULT_CHECK_FILESET}" ] ; then
       echo "estimate job=job_${JOB_NAME} listing client=client_${JOB_NAME} fileset=fileset_${JOB_NAME}" | bconsole | less
     fi
   fi

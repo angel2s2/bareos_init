@@ -39,7 +39,6 @@ You can read more about this script and it's work in my blog: http://blog.angel2
 or at github: ${HOMEPAGE}
 
 EOF_MESSAGE
-READ_RESULT='n'
 read -r -p "Continue? [y/N] " READ_RESULT
 if [ "${READ_RESULT}" != "y" -a "${READ_RESULT}" != "Y" -a "${READ_RESULT}" != "yes" -a "${READ_RESULT}" != "YES" ] ; then
   echo "Exiting..."
