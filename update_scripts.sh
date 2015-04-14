@@ -38,6 +38,7 @@ ls -1 "${THIS_SCRIPT_DIR}/scripts" | while read CURRENT_FILE ; do
     diff -q "${THIS_SCRIPT_DIR}/scripts/${CURRENT_FILE}" "${BAREOS_SCRIPTS_DIR}/${CURRENT_FILE}" &>/dev/null
     if [ $? -eq 1 ] ; then
       cp -f "${BAREOS_SCRIPTS_DIR}/${CURRENT_FILE}" "${BAREOS_SCRIPTS_DIR}/${CURRENT_FILE}.bak_${NOW}"
+      chmod -x "${BAREOS_SCRIPTS_DIR}/${CURRENT_FILE}.bak_${NOW}"
       cp -f "${THIS_SCRIPT_DIR}/scripts/${CURRENT_FILE}" "${BAREOS_SCRIPTS_DIR}"
     fi
   fi

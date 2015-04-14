@@ -7,6 +7,8 @@ VERSION="${MVERSION}.$(date +%Y.%m.%d)"
 
 rm -rf "${THIS_SCRIPT_DIR}/backup_scripts/old"
 find "${THIS_SCRIPT_DIR}/scripts" -type f -name '*.sh' -exec sed -i "s/^\(VERSION=\).*$/\1${VERSION}/g" '{}' \;
+sed -i 's/\(HTTP_PROXY="\).*"/\1"/g'                                 "${THIS_SCRIPT_DIR}/install_fd.sh"
+
 sed -i "s/^\([#]\?XXX_ROOT_DB_PASSWORD_XXX='\)[^']*'/\1'/g"          "${INIT_SCRIPT}"
 sed -i "s/^\([#]\?XXX_MAIL_SERVER_XXX='\)[^']*'/\1'/g"               "${INIT_SCRIPT}"
 sed -i "s/^\([#]\?XXX_BAREOS_EMAIL_XXX='\)[^']*'/\1'/g"              "${INIT_SCRIPT}"

@@ -151,7 +151,7 @@ if [ -z "${JOB_NAME}" ] ; then echo 'Job name [-n] is not specified! Exiting...'
 if [ -z "${CLIENT_ADDRESS}" ] ; then echo 'Client address [-a] is not specified! Exiting...' ; exit 1 ; fi
 
 # Если уже есть задание, то спросить, перезаписать его или нет
-if [ -f "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf" -o -f "${BAREOS_SD_CONF_D_DIR}/${JOB_NAME}.conf" -o -f "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos_fd.conf" ] ; then
+if [ -f "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf" -o -f "${BAREOS_SD_CONF_D_DIR}/${JOB_NAME}.conf" -o -f "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf" ] ; then
   read -r -p "Job ${JOB_NAME} already exists. Overwrite? [y/N] " READ_RESULT
   # если ответ отрицательный
   if [ "${READ_RESULT}" != "y" -a "${READ_RESULT}" != "Y" -a "${READ_RESULT}" != "yes" -a "${READ_RESULT}" != "YES" ] ; then
@@ -168,7 +168,7 @@ fi
 
 ### Если такой файл уже есть, сделать бэкап
 ___backup_config "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf"
-___backup_config "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos_fd.conf"
+___backup_config "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf"
 ___backup_config "${BAREOS_SD_CONF_D_DIR}/${JOB_NAME}.conf"
 
 PATH_TO_N="${PATH_TO}/${JOB_NAME}"
@@ -178,11 +178,11 @@ PATH_TO="$(echo "${PATH_TO_N}" | sed 's/\//\\\//g')"
 echo 'Setting up config files...'
 mkdir -p "${PATH_TO_N}"
 cp -f "${BAREOS_TEMPLATE_JOBS}"     "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf"
-cp -f "${BAREOS_TEMPLATE_FD}"       "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos_fd.conf"
+cp -f "${BAREOS_TEMPLATE_FD}"       "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf"
 cp -f "${BAREOS_TEMPLATE_DEVICES}"  "${BAREOS_SD_CONF_D_DIR}/${JOB_NAME}.conf"
 chown --recursive bareos:bareos     "${PATH_TO_N}"
 chown             bareos:bareos     "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf"
-chown             bareos:bareos     "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos_fd.conf"
+chown             bareos:bareos     "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf"
 chown             bareos:bareos     "${BAREOS_SD_CONF_D_DIR}/${JOB_NAME}.conf"
 
 ### Настройка include'ов {
@@ -225,16 +225,16 @@ fi
 ### Установка значений в конфигах {
 echo 'Setting values: job_name...'
 sed -i "s/${JOB_NAME_T}/${JOB_NAME}/g"              "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf"
-sed -i "s/${JOB_NAME_T}/${JOB_NAME}/g"              "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos_fd.conf"
+sed -i "s/${JOB_NAME_T}/${JOB_NAME}/g"              "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf"
 sed -i "s/${JOB_NAME_T}/${JOB_NAME}/g"              "${BAREOS_SD_CONF_D_DIR}/${JOB_NAME}.conf"              
 
 echo 'Setting values: client_address...'
 sed -i "s/${CLIENT_ADDRESS_T}/${CLIENT_ADDRESS}/g"  "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf"             
-sed -i "s/${CLIENT_ADDRESS_T}/${CLIENT_ADDRESS}/g"  "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos_fd.conf"
+sed -i "s/${CLIENT_ADDRESS_T}/${CLIENT_ADDRESS}/g"  "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf"
                                            
 echo 'Setting values: client_password...'
 sed -i "s/${CLIENT_PASS_T}/${CLIENT_PASS}/g"        "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf"             
-sed -i "s/${CLIENT_PASS_T}/${CLIENT_PASS}/g"        "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos_fd.conf"
+sed -i "s/${CLIENT_PASS_T}/${CLIENT_PASS}/g"        "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf"
                                            
 echo 'Setting values: directory...'
 sed -i "s/${PATH_TO_T}/${PATH_TO}/g"                "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf"              
@@ -246,7 +246,7 @@ if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes
   vim "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf"
 fi
 
-echo "Client settings saved to the file ${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos_fd.conf"
+echo "Client settings saved to the file ${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf"
 
 nc -znvvw 3 "${CLIENT_ADDRESS}" "${CLIENT_PORT}" &>/dev/null
 IS_CLIENT_AVAILABLE=$?
