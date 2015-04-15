@@ -3,10 +3,10 @@
 THIS_SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"                          # Откуда запущен скрипт
 INIT_SCRIPT="${THIS_SCRIPT_DIR}/initialize_bareos_configs.sh"
 MVERSION=0
-VERSION="${MVERSION}.$(date +%Y.%m.%d)"
+#VERSION="${MVERSION}.$(date +%Y.%m.%d)"
 
 rm -rf "${THIS_SCRIPT_DIR}/backup_scripts/old"
-find "${THIS_SCRIPT_DIR}/scripts" -type f -name '*.sh' -exec sed -i "s/^\(VERSION=\).*$/\1${VERSION}/g" '{}' \;
+#find "${THIS_SCRIPT_DIR}/scripts" -type f -name '*.sh' -exec sed -i "s/^\(VERSION=\).*$/\1${VERSION}/g" '{}' \;
 sed -i 's/\(HTTP_PROXY="\).*"/\1"/g'                                 "${THIS_SCRIPT_DIR}/install_fd.sh"
 
 sed -i "s/^\([#]\?XXX_ROOT_DB_PASSWORD_XXX='\)[^']*'/\1'/g"          "${INIT_SCRIPT}"
