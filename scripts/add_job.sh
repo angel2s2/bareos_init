@@ -16,7 +16,7 @@ LICENSE='GPLv3'
 #       MA 02110-1301, USA.
 # 
 SCRIPT_NAME='add_job.sh'
-VERSION=0.2015.04.14
+VERSION=0.2015.04.15
 DESCRIPTION="${SCRIPT_NAME} - script for bareos"
 AUTHOR='Roman (Angel2S2) Shagrov'
 EMAIL='bareos_init.mail@angel2s2.ru'   # для ошибок, замечаний и предложений

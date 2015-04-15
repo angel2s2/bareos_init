@@ -11,6 +11,7 @@ Client {
   Maximum Network Buffer Size   = 65536
   Messages                      = messages_file_daemon 
   Allow Bandwidth Bursting      = no
+  #Compatible                    = no                    # требуется для работы в режиме passive = yes
 }
 
 Director {
