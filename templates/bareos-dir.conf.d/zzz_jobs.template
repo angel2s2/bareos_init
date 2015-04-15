@@ -3,7 +3,7 @@ Client {
   Name                      = client_###name###
   Password                  = "###client_pass###"
   Address                   = ###client_address###
-  #Passive                  = no                    # если yes, то в bareos-fd.conf надо выставить Compatible = no
+  #Passive                  = yes                   # если yes, то в bareos-fd.conf надо выставить Compatible = no
   @/etc/bareos/inc.d/dir_client.conf
 }
 
