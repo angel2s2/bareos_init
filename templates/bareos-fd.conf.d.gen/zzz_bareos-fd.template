@@ -1,8 +1,8 @@
 Client {
   Name                          = client_fd_###name###
-  Working Directory             = /var/lib/bareos
-  Pid Directory                 = /var/run
-  #Scripts Directory            = <directory> 
+  Working Directory             = /var/lib/bareos           # удалить для windows клиентов
+  Pid Directory                 = /var/run                  # please remove for windows clients
+  #Scripts Directory            = <directory>               # удалить для windows клиентов
   Maximum Concurrent Jobs       = 20
   Heartbeat Interval            = 30
   FD Address                    = ###client_address###

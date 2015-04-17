@@ -16,7 +16,7 @@ LICENSE='GPLv3'
 #       MA 02110-1301, USA.
 # 
 SCRIPT_NAME='add_job.sh'
-VERSION=0.2015.04.15
+VERSION='0.2015.04.10'            # VER.YEAR.MONTH.DAY
 DESCRIPTION="${SCRIPT_NAME} - script for bareos"
 AUTHOR='Roman (Angel2S2) Shagrov'
 EMAIL='bareos_init.mail@angel2s2.ru'   # для ошибок, замечаний и предложений
@@ -241,13 +241,25 @@ sed -i "s/${PATH_TO_T}/${PATH_TO}/g"                "${BAREOS_DIR_CONF_D_DIR}/${
 sed -i "s/${PATH_TO_T}/${PATH_TO}/g"                "${BAREOS_SD_CONF_D_DIR}/${JOB_NAME}.conf"              
 ### }
 
+# запрос на редактирование файла задания
 read -r -p "Open file '${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf' ? [Y/n] " READ_RESULT
 if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" -o -z "${READ_RESULT}" ] ; then
   vim "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf"
 fi
-
 echo "Client settings saved to the file ${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf"
 
+# копирование конфига на клиента (только *nix)
+read -r -p "Copy bareos-fd.conf to client (${CLIENT_ADDRESS})? [Y/n] " READ_RESULT
+if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" -o -z "${READ_RESULT}" ] ; then
+  scp "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf" root@${CLIENT_ADDRESS}:/etc/bareos/bareos-fd.conf
+  # перезапуск клиента (только *nix)
+  read -r -p "Restart bareos-fd on client (${CLIENT_ADDRESS})? [Y/n] " READ_RESULT
+  if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" -o -z "${READ_RESULT}" ] ; then
+    ssh -t root@${CLIENT_ADDRESS} "service bareos-fd restart"
+  fi
+fi
+
+# проверка доступности клиента
 nc -znvvw 3 "${CLIENT_ADDRESS}" "${CLIENT_PORT}" &>/dev/null
 IS_CLIENT_AVAILABLE=$?
 if [ ${IS_CLIENT_AVAILABLE} -eq 0 ] ; then
@@ -256,16 +268,24 @@ else
   echo "Client ${CLIENT_ADDRESS}:${CLIENT_PORT} is not available..."
 fi
 
-read -r -p "Reload bareos, for the new settings take effect? [Y/n] " READ_RESULT_RELOAD
+# перезапуск демонов (директора и стореджа)
+echo 'If there is a running job, select NO !!!'
+read -r -p "Restart bareos, for the new settings take effect? [Y/n] " READ_RESULT_RELOAD
 if [ "${READ_RESULT_RELOAD}" = "y" -o "${READ_RESULT_RELOAD}" = "Y" -o "${READ_RESULT_RELOAD}" = "yes" -o "${READ_RESULT_RELOAD}" = "YES" -o -z "${READ_RESULT_RELOAD}" ] ; then
-  service bareos-sd reload
-  service bareos-dir reload
+  service bareos-dir restart
+  service bareos-sd restart
+  # если клиент доступен, то предложить проверить fileset
   if [ ${IS_CLIENT_AVAILABLE} -eq 0 ] ; then
     read -r -p "Want to check fileset now? [Y/n] " READ_RESULT_CHECK_FILESET
     if [ "${READ_RESULT_CHECK_FILESET}" = "y" -o "${READ_RESULT_CHECK_FILESET}" = "Y" -o "${READ_RESULT_CHECK_FILESET}" = "yes" -o "${READ_RESULT_CHECK_FILESET}" = "YES" -o -z "${READ_RESULT_CHECK_FILESET}" ] ; then
       echo "estimate job=job_${JOB_NAME} listing client=client_${JOB_NAME} fileset=fileset_${JOB_NAME}" | bconsole | less
     fi
+  # иначе напомнить, как это сделать самому
+  else
+    echo "In order to test the fileset, use the command (bconsole):"
+    echo "estimate job=job_${JOB_NAME} listing client=client_${JOB_NAME} fileset=fileset_${JOB_NAME}"
   fi
+# если отказ, напомнить как проверить fileset самому
 else
   echo "In order to test the fileset, use the command (bconsole):"
   echo "estimate job=job_${JOB_NAME} listing client=client_${JOB_NAME} fileset=fileset_${JOB_NAME}"

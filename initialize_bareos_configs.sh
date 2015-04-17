@@ -265,7 +265,7 @@ chown --recursive bareos:bareos "${BAREOS_DIR}"
 
 ### Просто перестраховка
 OUT_FILE="${BAREOS_TEMPLATES_DIR}/.initialize_variables"
-if [ -d "${OUT_FILE}" ] ; then
+if [ -f "${OUT_FILE}" ] ; then
   mv "${OUT_FILE}" "${OUT_FILE}.bak_${NOW}"
 fi
 
