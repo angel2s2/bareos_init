@@ -65,16 +65,18 @@ CLIENT_ADDRESS_T='###client_address###'
 CLIENT_PASS_T='###client_pass###'
 PATH_TO_T='###path_to###'
 GEN_PASS_ENABLE='no'
+IS_WIN_CLIENT='no'
 NOW="$(date +%Y%m%d%H%M%S)"
 ### <-- }
 
 
 ___help() {
 cat << EOF_HELP
-Usage: add_job.sh -n job_name -a client_address [-P|-p "pass"] [-d "/path/to"]
+Usage: add_job.sh -n job_name -a client_address [-w] [-P|-p "pass"] [-d "/path/to"]
 
   -n|--name job_name            - job name (no spaces)
   -a|--address client_address   - clien hostname or ip address
+  -w|--windows                  - for windows clients
   -p|--password "pass"          - client password
   -P|--gen-pass                 - forced password generation and set for client (override -p)
   -d|--directory "/path/to"     - directory, where backup's files will be stored
@@ -138,6 +140,7 @@ while [ $# -gt 0 ]; do
 	case "$1" in
     "-n" | "--name"       ) ___param_check '--name' "$2" ; JOB_NAME="$2" ; shift 2 ;;
     "-a" | "--address"    ) ___param_check '--address' "$2" ; CLIENT_ADDRESS="$2" ; shift 2 ;;
+    "-w" | "--windows"    ) IS_WIN_CLIENT='yes' ; shift ;;
 	  "-p" | "--password"	  ) ___param_check '--password' "$2" ; CLIENT_PASS="$2" ; shift 2 ;;
     "-P" | "--gen-pass"	  ) GEN_PASS_ENABLE='yes' ; shift ;;
   	"-d" | "--directory"  ) ___param_check '--directory' "$2" ; PATH_TO="$2" ; shift 2 ;;
@@ -241,6 +244,14 @@ sed -i "s/${PATH_TO_T}/${PATH_TO}/g"                "${BAREOS_DIR_CONF_D_DIR}/${
 sed -i "s/${PATH_TO_T}/${PATH_TO}/g"                "${BAREOS_SD_CONF_D_DIR}/${JOB_NAME}.conf"              
 ### }
 
+### Клиент виндовый? Если да, делаем соотв. настройки {
+if [ "${IS_WIN_CLIENT}" = "yes" ] ; then
+  sed -i 's/^\(\ \+\)@\(.\+_nix\.conf\)$/\1#@\2/' "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf"
+  sed -i 's/^\(\ \+\)#@\(.\+_win\.conf\)$/\1@\2/' "${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf"
+  sed -i '/Directory/d' "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf"
+fi
+### }
+
 # запрос на редактирование файла задания
 read -r -p "Open file '${BAREOS_DIR_CONF_D_DIR}/${JOB_NAME}.conf' ? [Y/n] " READ_RESULT
 if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" -o -z "${READ_RESULT}" ] ; then
@@ -249,13 +260,15 @@ fi
 echo "Client settings saved to the file ${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf"
 
 # копирование конфига на клиента (только *nix)
-read -r -p "Copy bareos-fd.conf to client (${CLIENT_ADDRESS})? [Y/n] " READ_RESULT
-if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" -o -z "${READ_RESULT}" ] ; then
-  scp "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf" root@${CLIENT_ADDRESS}:/etc/bareos/bareos-fd.conf
-  # перезапуск клиента (только *nix)
-  read -r -p "Restart bareos-fd on client (${CLIENT_ADDRESS})? [Y/n] " READ_RESULT
+if [ "${IS_WIN_CLIENT}" = "no" ] ; then
+  read -r -p "Copy bareos-fd.conf to client (${CLIENT_ADDRESS})? [Y/n] " READ_RESULT
   if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" -o -z "${READ_RESULT}" ] ; then
-    ssh -t root@${CLIENT_ADDRESS} "service bareos-fd restart"
+    scp "${BAREOS_FD_CONF_D_GEN_DIR}/${JOB_NAME}.bareos-fd.conf" root@${CLIENT_ADDRESS}:/etc/bareos/bareos-fd.conf
+    # перезапуск клиента (только *nix)
+    read -r -p "Restart bareos-fd on client (${CLIENT_ADDRESS})? [Y/n] " READ_RESULT
+    if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" -o -z "${READ_RESULT}" ] ; then
+      ssh -t root@${CLIENT_ADDRESS} "service bareos-fd restart"
+    fi
   fi
 fi
 

@@ -39,7 +39,8 @@ sed -i "s/^\([#]\?XXX_CONSOLE_MONITORING_PASS_XXX='\)[^']*'/\1'/g"   "${INIT_SCR
 #sed -i "s/^\([#]\?XXX_CONSOLE_MONITORING_NAME_XXX='\)[^']*'/\1'/g"   "${INIT_SCRIPT}"
 
 
-
+git diff --color
+read -p 'Press Enter to continue...'
 
 if [ "$(git tag -l v${MVERSION})" = "v${MVERSION}" ] ; then
   if [ $# -gt 0 ] ; then
