@@ -267,7 +267,7 @@ if [ "${IS_WIN_CLIENT}" = "no" ] ; then
     # перезапуск клиента (только *nix)
     read -r -p "Restart bareos-fd on client (${CLIENT_ADDRESS})? [Y/n] " READ_RESULT
     if [ "${READ_RESULT}" = "y" -o "${READ_RESULT}" = "Y" -o "${READ_RESULT}" = "yes" -o "${READ_RESULT}" = "YES" -o -z "${READ_RESULT}" ] ; then
-      ssh -t root@${CLIENT_ADDRESS} "service bareos-fd restart"
+      ssh -t root@${CLIENT_ADDRESS} "service bareos-fd stop ; service bareos-fd start"
     fi
   fi
 fi
