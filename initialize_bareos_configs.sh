@@ -52,19 +52,21 @@ XXX_MAIL_SERVER_XXX=''               # адрес почтового серве�
 XXX_BAREOS_EMAIL_XXX=''            # имя отправителя
 XXX_ADMIN_EMAIL_XXX=''            # куда слать уведомления
 
-XXX_PATH_TO_XXX='\/mnt\/backups\/bareos_server'  # куда бэкапить данные с bareos server, слэши обязательно экранировать (\/path\/to)
+XXX_PATH_TO_XXX='\/mnt\/1\/bareos_server'  # куда бэкапить данные с bareos server, слэши обязательно экранировать (\/path\/to)
 ETH_N='eth0'                                     # на каком интефейсе слушать (нужно для этого скрипта, чтобы правильно определить IP)
 
 ### Задаются в ресурсе Catalog{} в bareos-dir.conf
-XXX_CATALOG_DBNAME_XXX=''
-XXX_CATALOG_DBUSER_XXX=''
+XXX_CATALOG_DBNAME_XXX='bareos'
+XXX_CATALOG_DBUSER_XXX='bareos'
 XXX_CATALOG_DBPASSWORD_XXX=''         # скриптом автоматически НЕ генерируется!!!
+XXX_CATALOG_DBSOCKET_XXX='\/var\/run\/mysql\/mysql.sock'		# OpenSUSE, слэши обязательно экранировать (\/path\/to)
+#XXX_CATALOG_DBSOCKET_XXX='\/var\/run\/mysqld\/mysqld.sock'		# Debian, слэши обязательно экранировать (\/path\/to)
 
 ### Настройки веб-интерфейса, задаются в /etc/bareos-webui/directors.ini (см. $BAREOS_WEBUI)
 ### Как настроить БД можно прочитать в документации https://github.com/bareos/bareos-webui/blob/master/doc/INSTALL.md
 ### или в моем блоге 
 XXX_WEBUI_DBNAME_XXX="${XXX_CATALOG_DBNAME_XXX}"
-XXX_WEBUI_DBUSER_XXX=''
+XXX_WEBUI_DBUSER_XXX='bareos_webui_user'
 XXX_WEBUI_DBPASSWORD_XXX=''             # скриптом автоматически НЕ генерируется!!!
 
 ### Фактически, это login для входа в веб-интерфейс
@@ -88,14 +90,14 @@ XXX_CONSOLE_MONITORING_PASS_XXX=''
 #XXX_CLIENT_ADDRESS_XXX='10.1.1.161'
 #XXX_STORAGE_DAEMON_ADDRESS_XXX='10.1.1.161'
 
-# ---> Например, если IP адрес = 10.1.1.161, то эти переменные (которые приведены ниже) будут иметь вид
+# ---> Например, если IP адрес = 10.1.1.161, то эти переменные, которые приведены ниже, если они закомментированы, будут иметь вид
 # ---> director_bareos_161, storage_daemon_bareos_161 и т.д.
-#XXX_DIRECTOR_NAME_XXX='director_bareos_161'
-#XXX_STORAGE_DAEMON_NAME_XXX='storage_daemon_bareos_161'
-#XXX_FILE_DAEMON_NAME_XXX='file_daemon_bareos_161'
-#XXX_CLIENT_NAME_XXX='client_bareos_server_161'
-#XXX_CONSOLE_ADMIN_NAME_XXX='console_admin_bareos_161'
-#XXX_CONSOLE_MONITORING_NAME_XXX='console_monitoring_bareos_161'
+XXX_DIRECTOR_NAME_XXX='director_bareos'
+XXX_STORAGE_DAEMON_NAME_XXX='storage_daemon_bareos'
+XXX_FILE_DAEMON_NAME_XXX='file_daemon_bareos'
+XXX_CLIENT_NAME_XXX='client_bareos_server'
+XXX_CONSOLE_ADMIN_NAME_XXX='console_admin_bareos'
+XXX_CONSOLE_MONITORING_NAME_XXX='console_monitoring_bareos'
 # <--- }
 
 BAREOS_DIR="/etc/bareos"                          # Основной каталог
@@ -192,7 +194,8 @@ ___set_config_data "XXX_CATALOG_DBPASSWORD_XXX"       "${XXX_CATALOG_DBPASSWORD_
 ### <<< }
 
 ### Текущий IP адрес, который закреплен за интерфейсом, указанном в $ETH_N
-CURRENT_IP="$(ifconfig $ETH_N | awk '/inet addr:/ {print $2}' | awk -F':' '{print $2}')"
+#CURRENT_IP="$(ifconfig $ETH_N | awk '/inet addr:/ {print $2}' | awk -F':' '{print $2}')"
+CURRENT_IP="$(ip address show dev $ETH_N | awk '/inet / {print $2}' | sed 's/\/[0-9]\+$//')"
 
 ### >>> Проверка и установка переменных (адреса и имена) {
 if [ -z "${XXX_DIRECTOR_ADDRESS_XXX}" ] ; then
@@ -249,6 +252,7 @@ ___set_config_data "XXX_CONSOLE_ADMIN_NAME_XXX"       "${XXX_CONSOLE_ADMIN_NAME_
 ___set_config_data "XXX_CONSOLE_MONITORING_NAME_XXX"  "${XXX_CONSOLE_MONITORING_NAME_XXX}"
 ___set_config_data "XXX_CATALOG_DBNAME_XXX"           "${XXX_CATALOG_DBNAME_XXX}"
 ___set_config_data "XXX_CATALOG_DBUSER_XXX"           "${XXX_CATALOG_DBUSER_XXX}"
+___set_config_data "XXX_CATALOG_DBSOCKET_XXX"         "${XXX_CATALOG_DBSOCKET_XXX}"
 ___set_config_data "XXX_PATH_TO_XXX"                  "${XXX_PATH_TO_XXX}"
 mkdir -p "$(echo "${XXX_PATH_TO_XXX}" | tr -d '\\')"
 ### <<< }
@@ -325,4 +329,3 @@ diraddress = "${XXX_DIRECTOR_ADDRESS_XXX}"
 dirport = 9101
 EOF_BAREOS_WEBUI
 fi
-
